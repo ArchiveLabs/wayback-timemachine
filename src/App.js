@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import ExampleViz from './ExampleViz.js';
+import CoverFlow from './CoverFlow.js';
 import jQuery from 'jquery';
 
 class App extends Component {
@@ -121,7 +122,7 @@ class App extends Component {
           </form>
 
           <loadingEl />
-          <ExampleViz data={this.state.results} />
+          <CoverFlow data={this.state.results} />
 
         </div>
       </div>

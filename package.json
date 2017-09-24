@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "jquery": "^2.*.*",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-scripts": "1.0.13",
-    "jquery": "^2.*.*"
+    "three": "^0.87.1"
   },
   "scripts": {
     "start": "react-scripts start",
