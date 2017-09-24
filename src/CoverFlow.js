@@ -93,8 +93,7 @@ class CoverFlow extends Component {
 
     var mesh = new Mesh(
       this.geometry, new MeshBasicMaterial({
-        color: 'white',
-        map: new Texture()
+        color: '#efefef'
       })
     );
 
@@ -114,8 +113,9 @@ class CoverFlow extends Component {
       canvas.getContext('2d').drawImage(
         image, sx, sy, sw, sh, dx, dy, dw, dh);
 
-      mesh.material.map.image = canvas;
+      mesh.material.map = new Texture(canvas);
       mesh.material.map.needsUpdate = true;
+      mesh.material.needsUpdate = true;
 
     };
     image.src = './images/iskme-org.png';//data.screenshot_url;
