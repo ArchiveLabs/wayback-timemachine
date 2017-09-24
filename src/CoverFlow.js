@@ -93,8 +93,7 @@ class CoverFlow extends Component {
 
     var mesh = new Mesh(
       this.geometry, new MeshBasicMaterial({
-        color: 'white',
-        map: new Texture()
+        color: '#efefef'
       })
     );
 
@@ -116,8 +115,11 @@ class CoverFlow extends Component {
       canvas.getContext('2d').drawImage(
         image, sx, sy, sw, sh, dx, dy, dw, dh);
 
-      mesh.material.map.image = canvas;
+      mesh.material.color.set('white');
+      mesh.material.map = new Texture(canvas);
+
       mesh.material.map.needsUpdate = true;
+      mesh.material.needsUpdate = true;
 
     };
     image.src = /*'./images/iskme-org.png';//*/data.screenshot_url;
@@ -147,7 +149,7 @@ class CoverFlow extends Component {
       mesh = intersects[0].object;
       // TODO: Use mesh.userData and the real data to
       // pop open the right URL
-      window.open(mesh.userData.model.screenshot_url, '_blank');
+      window.open(mesh.userData.model.url, '_blank');
     }
 
   }

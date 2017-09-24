@@ -82,6 +82,7 @@ class App extends Component {
 
 
           return {
+            url: `https://web.archive.org/web/${row[1]}/${url}`,
             timestamp: row[1],
             original_url: row[2],
             content_type: row[3],
