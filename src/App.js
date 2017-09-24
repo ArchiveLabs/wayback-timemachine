@@ -42,12 +42,10 @@ class App extends Component {
         url: searchValue,
         output: 'json',
         matchType: 'prefix',
-        limit: 10
+        limit: 50
       },
     }).then((data) => {
       this.setState({isLoading: false});
-
-      console.log(data);
 
       // remove first element from array
       data.shift();
@@ -63,12 +61,26 @@ class App extends Component {
       //   "1415"
       // ]
 
-
       this.setState({
         results: data.map(function(row) {
+
+
           //  https://web.archive.org/web/20160904103421id_/http://web.archive.org/screenshot/http://iskme.org/
           var url = row[2].replace(':80', '');
-          var screenshot_url = `https://web.archive.org/web/${row[1]}id_/http://web.archive.org/screenshot/${url}`;
+          var screenshot_url = `//web.archive.org/web/${row[1]}id_/http://web.archive.org/screenshot/${url}`;
+
+          // SCREENSHOT SERVICE
+          var url2 = row[2].replace(':80', '');
+          var fullurl = `//web.archive.org/web/${row[1]}/${url2}`;
+          screenshot_url = `//api.screenshotlayer.com/api/capture?access_key=5d0c7fb238410799db15ccfdd8c8dfba&url=${fullurl}&viewport=900x1440&width=1000`
+
+          // SCREENSHOT SERVICE
+          var url3 = row[2].replace(':80', '');
+          var screenshot_url2 = `https://web.archive.org/web/${row[1]}id_/http://web.archive.org/screenshot/${url}`;
+          fullurl = encodeURIComponent(screenshot_url2);
+          screenshot_url = `//archive.org/~richard/dev/cors.php?url=${fullurl}`;
+
+
           return {
             timestamp: row[1],
             original_url: row[2],
@@ -76,6 +88,8 @@ class App extends Component {
             response_code: row[4],
             screenshot_url: screenshot_url
           }
+        }).filter(function(row) {
+          return row.response_code == 200;
         })
       });
 

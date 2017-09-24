@@ -99,6 +99,7 @@ class CoverFlow extends Component {
     );
 
     var image = document.createElement('img');
+    image.crossOrigin = 'anonymous';
     image.onload = function() {
 
       var sx = 0;
@@ -111,6 +112,7 @@ class CoverFlow extends Component {
       var dw = canvas.width;
       var dh = canvas.height;
 
+      canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
       canvas.getContext('2d').drawImage(
         image, sx, sy, sw, sh, dx, dy, dw, dh);
 
@@ -118,7 +120,7 @@ class CoverFlow extends Component {
       mesh.material.map.needsUpdate = true;
 
     };
-    image.src = './images/iskme-org.png';//data.screenshot_url;
+    image.src = /*'./images/iskme-org.png';//*/data.screenshot_url;
 
     mesh.position.z = - this.distance * i;
     mesh.rotation.x = - Math.PI / 10;
@@ -168,7 +170,8 @@ class CoverFlow extends Component {
   componentWillUnmount() {
 
   }
-  render() {
+  componentWillReceiveProps(nextProps) {
+    var props = nextProps;
 
     if (this.initiated) {
 
@@ -181,9 +184,9 @@ class CoverFlow extends Component {
         }
       }
 
-      for (var j = 0; j < this.props.data.length; j++) {
+      for (var j = 0; j < props.data.length; j++) {
 
-        var mesh = this.createPaper(j, this.props.data[j]);
+        var mesh = this.createPaper(j, props.data[j]);
 
         this.range.min = Math.min(this.range.min, mesh.position.z);
         this.range.max = Math.max(this.range.max, mesh.position.z);
@@ -196,6 +199,9 @@ class CoverFlow extends Component {
       this.range.max += this.distance * 0.66;
 
     }
+
+  }
+  render() {
 
     return (
       <div className="CoverFlow" ref={el => this.container = el}></div>
