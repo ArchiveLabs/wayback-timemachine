@@ -70,6 +70,7 @@ class App extends Component {
           var url = row[2].replace(':80', '');
           var screenshot_url = `https://web.archive.org/web/${row[1]}id_/http://web.archive.org/screenshot/${url}`;
           return {
+            url: `https://web.archive.org/web/${row[1]}/${url}`,
             timestamp: row[1],
             original_url: row[2],
             content_type: row[3],

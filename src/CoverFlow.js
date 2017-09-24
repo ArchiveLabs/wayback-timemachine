@@ -145,7 +145,7 @@ class CoverFlow extends Component {
       mesh = intersects[0].object;
       // TODO: Use mesh.userData and the real data to
       // pop open the right URL
-      window.open(mesh.userData.model.screenshot_url, '_blank');
+      window.open(mesh.userData.model.url, '_blank');
     }
 
   }
