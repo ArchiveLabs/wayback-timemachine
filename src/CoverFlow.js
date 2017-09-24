@@ -113,7 +113,9 @@ class CoverFlow extends Component {
       canvas.getContext('2d').drawImage(
         image, sx, sy, sw, sh, dx, dy, dw, dh);
 
+      mesh.material.color.set('white');
       mesh.material.map = new Texture(canvas);
+
       mesh.material.map.needsUpdate = true;
       mesh.material.needsUpdate = true;
 
