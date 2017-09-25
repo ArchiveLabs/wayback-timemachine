@@ -43,7 +43,7 @@ class App extends Component {
       data: {
         url: searchValue,
         output: 'json',
-        //matchType: 'prefix',
+        matchType: 'exact',
         limit: this.state.apiLimit
       },
     }).then((data) => {
