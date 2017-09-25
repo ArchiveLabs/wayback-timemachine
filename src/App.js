@@ -44,6 +44,8 @@ class App extends Component {
         url: searchValue,
         output: 'json',
         matchType: 'exact',
+        filter: 'statuscode:200',
+        collapse: 'timestamp:1000',
         limit: this.state.apiLimit
       },
     }).then((data) => {
