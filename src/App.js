@@ -43,7 +43,7 @@ class App extends Component {
       data: {
         url: searchValue,
         output: 'json',
-        matchType: 'prefix',
+        //matchType: 'prefix',
         limit: this.state.apiLimit
       },
     }).then((data) => {
@@ -63,6 +63,10 @@ class App extends Component {
       //   "1415"
       // ]
 
+      // SORT BY timestamp
+      data = data.sort(function(a, b) {
+        return a[1] - b[1];
+      });
 
       // function getScreenshotBuiltIn(row) {
       //   //  https://web.archive.org/web/20160904103421id_/http://web.archive.org/screenshot/http://iskme.org/
