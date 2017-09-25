@@ -10,21 +10,23 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      searchValue: 'https://jquery.org',
+      searchValue: 'https://nytimes.com',
       results: [],
       isLoading: false,
+      apiLimit: 5000,
+      showLimit: 25,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSearchChange = this.handleSearchChange.bind(this);
   }
 
   handleSubmit(event) {
-    this.fetchData(this.state.searchValue);
+    this.fetchData(this.refs.searchEl.value);
     event.preventDefault();
   }
 
   handleSearchChange(event) {
-    this.setState({searchValue: event.target.value});
+    //this.setState({searchValue: event.target.value});
     event.preventDefault();
   }
 
@@ -42,7 +44,7 @@ class App extends Component {
         url: searchValue,
         output: 'json',
         matchType: 'prefix',
-        limit: 50
+        limit: this.state.apiLimit
       },
     }).then((data) => {
       this.setState({isLoading: false});
@@ -61,63 +63,63 @@ class App extends Component {
       //   "1415"
       // ]
 
-      this.setState({
-        results: data.map(function(row) {
 
+      // function getScreenshotBuiltIn(row) {
+      //   //  https://web.archive.org/web/20160904103421id_/http://web.archive.org/screenshot/http://iskme.org/
+      //   var url = row[2].replace(':80', '');
+      //   var screenshot_url = `//web.archive.org/web/${row[1]}id_/http://web.archive.org/screenshot/${url}`;
+      //   return screenshot_url;
+      // }
+      //
+      // function getScreenshotBuiltInCors(row) {
+      //   // wayback cors
+      //   var url3 = row[2].replace(':80', '');
+      //   var screenshot_url2 = `https://web.archive.org/web/${row[1]}id_/http://web.archive.org/screenshot/${url3}`;
+      //   fullurl = encodeURIComponent(screenshot_url2);
+      //   screenshot_url = `//archive.org/~richard/dev/cors.php?url=${fullurl}`;
+      //   return screenshot_url;
+      // }
+      //
+      // function getScreenshotLayer(row) {
+      //   // SCREENSHOT SERVICE
+      //   var url2 = row[2].replace(':80', '');
+      //   var fullurl = `//web.archive.org/web/${row[1]}/${url2}`;
+      //   screenshot_url = `//api.screenshotlayer.com/api/capture?access_key=5d0c7fb238410799db15ccfdd8c8dfba&url=${fullurl}&viewport=900x1440&width=1000`
+      //   return screenshot_url;
+      // }
 
-          //  https://web.archive.org/web/20160904103421id_/http://web.archive.org/screenshot/http://iskme.org/
-          var url = row[2].replace(':80', '');
-          var screenshot_url = `//web.archive.org/web/${row[1]}id_/http://web.archive.org/screenshot/${url}`;
+      function getScreenshotMicroservice(row) {
+        // http://richard-dev.us.archive.org:8200/?url=www.google.com
 
-          // SCREENSHOT SERVICE
-          var url2 = row[2].replace(':80', '');
-          var fullurl = `//web.archive.org/web/${row[1]}/${url2}`;
-          screenshot_url = `//api.screenshotlayer.com/api/capture?access_key=5d0c7fb238410799db15ccfdd8c8dfba&url=${fullurl}&viewport=900x1440&width=1000`
+        var baseUrl = 'http://richard-dev.us.archive.org:8200/';
+        var url2 = row[2].replace(':80', '');
+        var fullurl = encodeURIComponent(`http://web.archive.org/web/${row[1]}/${url2}`);
+        return `${baseUrl}?url=${fullurl}`
+      }
 
-          // SCREENSHOT SERVICE
-          var url3 = row[2].replace(':80', '');
-          var screenshot_url2 = `https://web.archive.org/web/${row[1]}id_/http://web.archive.org/screenshot/${url}`;
-          fullurl = encodeURIComponent(screenshot_url2);
-          screenshot_url = `//archive.org/~richard/dev/cors.php?url=${fullurl}`;
+      // console.log(data);
 
-
-          return {
-            url: `https://web.archive.org/web/${row[1]}/${url}`,
-            timestamp: row[1],
-            original_url: row[2],
-            content_type: row[3],
-            response_code: row[4],
-            screenshot_url: screenshot_url
-          }
-        }).filter(function(row) {
-          return row.response_code == 200;
-        })
+      var data200 = data.filter(function(row) {
+        return row[4] == 200;
       });
 
-    });
-    // // items
-    // jQuery.getJSON(buildSearchUrl({
-    //   q: 'collection:' + identifier + ' AND NOT mediatype:collection',
-    //   rows: 10,
-    // })).then((data) => {
-    //   // console.log(data.response);
-    //   this.setState({
-    //     numFound: data.response.numFound,
-    //     start: data.response.start,
-    //     items: data.response.docs
-    //   });
-    // });
-    // // collections
-    // jQuery.getJSON(buildSearchUrl({
-    //   q: 'collection:' + identifier + ' AND mediatype:collection',
-    //   rows: 10
-    // })).then((data) => {
-    //   // console.log(data.response);
-    //   this.setState({
-    //     collections: data.response.docs
-    //   });
-    // });
+      var dataMapped = data200.map(function(row) {
+        var url = row[2].replace(':80', '');
+        return {
+          url: `https://web.archive.org/web/${row[1]}/${url}`,
+          timestamp: row[1],
+          original_url: row[2],
+          content_type: row[3],
+          response_code: row[4],
+          screenshot_url: getScreenshotMicroservice(row)
+        }
+      }).filter((row, index) => {
+        var skip = Math.floor(data200.length / this.state.showLimit);
+        return index % skip == 0;
+      });
 
+      this.setState({results: dataMapped});
+    });
   }
 
 
@@ -132,7 +134,7 @@ class App extends Component {
       <div className="App">
         <div className="">
           <form onSubmit={this.handleSubmit}>
-            <input value={this.state.searchValue} onChange={this.handleSearchChange} />
+            <input defaultValue={this.state.searchValue} onChange={this.handleSearchChange} ref="searchEl" />
             <input type="submit" />
           </form>
 
