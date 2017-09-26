@@ -9,8 +9,10 @@ class CoverFlow extends Component {
     super(props);
     this.state = {};
   }
+  shouldComponentUpdate() {
+    return false;
+  }
   componentDidMount() {
-
     this.canvas = document.createElement('canvas');
     this._loop = this.loop.bind(this);
 
@@ -122,7 +124,8 @@ class CoverFlow extends Component {
       mesh.material.needsUpdate = true;
 
     };
-    image.src = /*'./images/iskme-org.png';//*/data.screenshot_url;
+    image.src = data.screenshot_url;
+    console.log(image.src);
 
     mesh.position.z = - this.distance * i;
     mesh.rotation.x = - Math.PI / 10;
@@ -174,11 +177,12 @@ class CoverFlow extends Component {
   }
   componentWillReceiveProps(nextProps) {
     var props = nextProps;
+    console.log(props);
 
     if (this.initiated) {
 
       if (this.scene.children.length > 0) {
-        var children = this.scene.children.slice(0);
+        let children = this.scene.children.slice(0);
         for (var i = 0; i < children.length; i++) {
           this.scene.remove(children[i]);
           // TODO: Dispose of memory stuff on each mesh here...
@@ -188,7 +192,7 @@ class CoverFlow extends Component {
 
       for (var j = 0; j < props.data.length; j++) {
 
-        var mesh = this.createPaper(j, props.data[j]);
+        let mesh = this.createPaper(j, props.data[j]);
 
         this.range.min = Math.min(this.range.min, mesh.position.z);
         this.range.max = Math.max(this.range.max, mesh.position.z);
