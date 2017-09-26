@@ -5,7 +5,7 @@
 
 $user_limit = $_GET['limit'] ? $_GET['limit'] : 25;
 $params = $_GET;
-$params['limit'] = 50000; // full sample size
+$params['limit'] = 10000000; // 10 million to ensure full sample size
 $cdx = 'http://web.archive.org/cdx/search/cdx?';
 $api_url = $cdx . http_build_query($params);
 $response = json_decode(file_get_contents($api_url));
