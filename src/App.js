@@ -98,21 +98,17 @@ class App extends Component {
   }
 
   render() {
-    var loadingEl;
-    if (this.state.isLoading) {
-      loadingEl = <div style={{color:'white'}}>Loading...</div>;
-    }
+    var submitText = this.state.isLoading ? 'Loading...' : 'Submit';
 
     return (
       <div className="App">
-        <div className="">
+        <div className="App-header">
           <form onSubmit={this.handleSubmit}>
-            <input defaultValue={this.state.searchValue} onChange={this.handleSearchChange} ref="searchEl" />
-            <input type="submit" />
-            {loadingEl}
+            <input type="text" defaultValue={this.state.searchValue} onChange={this.handleSearchChange} ref="searchEl" />
+            <input type="submit" value={submitText} disabled={this.state.isLoading}/>
           </form>
-          <CoverFlow data={this.state.results} />
         </div>
+        <CoverFlow data={this.state.results} />
       </div>
     );
   }
