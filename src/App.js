@@ -18,7 +18,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      searchValue: getParameterByName('q') || 'https://nytimes.com',
+      searchValue: getParameterByName('q') || '',
       results: [],
       isLoading: false,
       showLimit: 15,
