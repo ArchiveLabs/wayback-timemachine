@@ -1,16 +1,24 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import ExampleViz from './ExampleViz.js';
 import CoverFlow from './CoverFlow.js';
 import jQuery from 'jquery';
 
-class App extends Component {
+function updateUrlParameter(value) {
+  window.history.replaceState("", "", "?q=" + value);
+}
 
+// https://stackoverflow.com/a/5158301
+function getParameterByName(name) {
+  var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+  return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      searchValue: 'https://nytimes.com',
+      searchValue: getParameterByName('q') || 'https://nytimes.com',
       results: [],
       isLoading: false,
       showLimit: 15,
@@ -18,8 +26,14 @@ class App extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  componentDidMount() {
+    if (this.refs.searchEl.value)
+      this.fetchData(this.refs.searchEl.value);
+  }
+
   handleSubmit(event) {
     this.fetchData(this.refs.searchEl.value);
+    updateUrlParameter(this.refs.searchEl.value);
     event.preventDefault();
   }
 
