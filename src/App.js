@@ -13,20 +13,13 @@ class App extends Component {
       searchValue: 'https://nytimes.com',
       results: [],
       isLoading: false,
-      apiLimit: 5000,
-      showLimit: 25,
+      showLimit: 15,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleSearchChange = this.handleSearchChange.bind(this);
   }
 
   handleSubmit(event) {
     this.fetchData(this.refs.searchEl.value);
-    event.preventDefault();
-  }
-
-  handleSearchChange(event) {
-    //this.setState({searchValue: event.target.value});
     event.preventDefault();
   }
 
@@ -39,19 +32,20 @@ class App extends Component {
 
     // metadata
     jQuery.getJSON({
-      url: 'http://web.archive.org/cdx/search/cdx',
+      //url: 'http://web.archive.org/cdx/search/cdx',
+      url: 'https://archive.org/~richard/dev/cdx_sample.php',
       data: {
         url: searchValue,
         output: 'json',
         matchType: 'exact',
         filter: 'statuscode:200',
-        collapse: 'timestamp:1000',
-        limit: this.state.apiLimit
+        collapse: 'timestamp:100000',
+        limit: this.state.showLimit
       },
     }).then((data) => {
       this.setState({isLoading: false});
 
-      // remove first element from array
+      // Remove first element from array (header fields)
       data.shift();
 
       // Example result
@@ -65,51 +59,15 @@ class App extends Component {
       //   "1415"
       // ]
 
-      // SORT BY timestamp
-      data = data.sort(function(a, b) {
-        return a[1] - b[1];
-      });
-
-      // function getScreenshotBuiltIn(row) {
-      //   //  https://web.archive.org/web/20160904103421id_/http://web.archive.org/screenshot/http://iskme.org/
-      //   var url = row[2].replace(':80', '');
-      //   var screenshot_url = `//web.archive.org/web/${row[1]}id_/http://web.archive.org/screenshot/${url}`;
-      //   return screenshot_url;
-      // }
-      //
-      // function getScreenshotBuiltInCors(row) {
-      //   // wayback cors
-      //   var url3 = row[2].replace(':80', '');
-      //   var screenshot_url2 = `https://web.archive.org/web/${row[1]}id_/http://web.archive.org/screenshot/${url3}`;
-      //   fullurl = encodeURIComponent(screenshot_url2);
-      //   screenshot_url = `//archive.org/~richard/dev/cors.php?url=${fullurl}`;
-      //   return screenshot_url;
-      // }
-      //
-      // function getScreenshotLayer(row) {
-      //   // SCREENSHOT SERVICE
-      //   var url2 = row[2].replace(':80', '');
-      //   var fullurl = `//web.archive.org/web/${row[1]}/${url2}`;
-      //   screenshot_url = `//api.screenshotlayer.com/api/capture?access_key=5d0c7fb238410799db15ccfdd8c8dfba&url=${fullurl}&viewport=900x1440&width=1000`
-      //   return screenshot_url;
-      // }
-
       function getScreenshotMicroservice(row) {
         // http://richard-dev.us.archive.org:8200/?url=www.google.com
-
         var baseUrl = 'http://richard-dev.us.archive.org:8200/';
         var url2 = row[2].replace(':80', '');
         var fullurl = encodeURIComponent(`http://web.archive.org/web/${row[1]}/${url2}`);
         return `${baseUrl}?url=${fullurl}`
       }
 
-      // console.log(data);
-
-      var data200 = data.filter(function(row) {
-        return row[4] == 200;
-      });
-
-      var dataMapped = data200.map(function(row) {
+      var dataMapped = data.map(function(row) {
         var url = row[2].replace(':80', '');
         return {
           url: `https://web.archive.org/web/${row[1]}/${url}`,
@@ -119,21 +77,16 @@ class App extends Component {
           response_code: row[4],
           screenshot_url: getScreenshotMicroservice(row)
         }
-      }).filter((row, index) => {
-        var skip = Math.floor(data200.length / this.state.showLimit);
-        return index % skip == 0;
       });
 
       this.setState({results: dataMapped});
     });
   }
 
-
-
   render() {
     var loadingEl;
     if (this.state.isLoading) {
-      loadingEl = <h1>Loading!!</h1>;
+      loadingEl = <div style={{color:'white'}}>Loading...</div>;
     }
 
     return (
@@ -142,11 +95,9 @@ class App extends Component {
           <form onSubmit={this.handleSubmit}>
             <input defaultValue={this.state.searchValue} onChange={this.handleSearchChange} ref="searchEl" />
             <input type="submit" />
+            {loadingEl}
           </form>
-
-          <loadingEl />
           <CoverFlow data={this.state.results} />
-
         </div>
       </div>
     );
