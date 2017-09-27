@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import {
-  WebGLRenderer, Scene, PerspectiveCamera, Raycaster, Vector2,
+  WebGLRenderer, Scene, PerspectiveCamera, Raycaster, Vector2, Vector3,
   PlaneBufferGeometry, Fog, Mesh, MeshBasicMaterial, Texture
 } from 'three';
 
+var tv = new Vector3();
+
 class CoverFlow extends Component {
+  drag = 0.0625;
   constructor(props) {
     super(props);
     this.state = {};
@@ -19,6 +22,7 @@ class CoverFlow extends Component {
     var renderer = this.renderer = new WebGLRenderer({ antialis: true });
     var scene = this.scene = new Scene();
     var camera = this.camera = new PerspectiveCamera(75);
+    camera.userData.destination = new Vector3();
 
     this.raycaster = new Raycaster();
     this.geometry = new PlaneBufferGeometry(1, 1);
@@ -39,7 +43,7 @@ class CoverFlow extends Component {
 
     scene.fog = new Fog('black', 0, 50);
 
-    camera.position.y = 8;
+    camera.userData.destination.y = 8;
     camera.rotation.x = - Math.PI / 5;
 
     renderer.domElement.style.position = 'absolute';
@@ -54,9 +58,9 @@ class CoverFlow extends Component {
       e.preventDefault();
       var y = e.deltaY;
 
-      camera.position.z += y / 10;
-      camera.position.z = Math.max(
-        Math.min(camera.position.z, range.max), range.min);
+      camera.userData.destination.z += y / 10;
+      camera.userData.destination.z = Math.max(
+        Math.min(camera.userData.destination.z, range.max), range.min);
 
     });
 
@@ -73,9 +77,9 @@ class CoverFlow extends Component {
       var t = e.touches[0];
       var deltaY = t.clientY - touch.y;
 
-      camera.position.z -= deltaY / 10;
-      camera.position.z = Math.max(
-        Math.min(camera.position.z, range.max), range.min);
+      camera.userData.destination.z -= deltaY / 10;
+      camera.userData.destination.z = Math.max(
+        Math.min(camera.userData.destination.z, range.max), range.min);
 
       touch.x = t.clientX;
       touch.y = t.clientY;
@@ -167,6 +171,12 @@ class CoverFlow extends Component {
 
   }
   loop() {
+
+    this.camera.position.add(
+      tv.copy(this.camera.userData.destination)
+        .sub(this.camera.position)
+        .multiplyScalar(this.drag)
+    );
 
     this.renderer.render(this.scene, this.camera);
     requestAnimationFrame(this._loop);
