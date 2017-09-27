@@ -35,6 +35,11 @@ class App extends Component {
     this.fetchData(this.refs.searchEl.value);
     updateUrlParameter(this.refs.searchEl.value);
     event.preventDefault();
+
+    // HACK there is a bug, maybe with the React+THREE.js integration where images
+    // are duplicating. It might be related to react's lifecyle or render.
+    // As a work-around we do a full page load on submit.
+    window.location.reload();
   }
 
   fetchData(searchValue) {
