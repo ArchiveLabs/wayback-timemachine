@@ -13,7 +13,7 @@ class CoverFlow extends Component {
     return false;
   }
   componentDidMount() {
-    this.canvas = document.createElement('canvas');
+    // this.canvas = document.createElement('canvas');
     this._loop = this.loop.bind(this);
 
     var renderer = this.renderer = new WebGLRenderer({ antialis: true });
@@ -27,7 +27,7 @@ class CoverFlow extends Component {
     this.width = 8.5;
     this.height = 11;
     this.distance = 10;
-    this.canvas.width = this.canvas.height = 1024;
+    // this.canvas.width = this.canvas.height = 1024;
 
     this.container.appendChild(this.renderer.domElement);
     this.initiated = true;
@@ -91,7 +91,8 @@ class CoverFlow extends Component {
   createPaper(i, data) {
 
     var scope = this;
-    var canvas = this.canvas;
+    var canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 1024;
 
     var mesh = new Mesh(
       this.geometry, new MeshBasicMaterial({
