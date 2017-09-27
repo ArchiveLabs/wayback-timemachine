@@ -58,7 +58,7 @@ class App extends Component {
         output: 'json',
         matchType: 'exact',
         filter: 'statuscode:200',
-        collapse: 'timestamp:5',
+        collapse: 'timestamp:4',
         limit: this.state.showLimit
       },
     }).then((data) => {
