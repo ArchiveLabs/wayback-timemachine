@@ -21,7 +21,7 @@ class App extends Component {
       searchValue: getParameterByName('q') || '',
       results: [],
       isLoading: false,
-      showLimit: 15,
+      showLimit: 25,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -53,7 +53,7 @@ class App extends Component {
         output: 'json',
         matchType: 'exact',
         filter: 'statuscode:200',
-        collapse: 'timestamp:100000',
+        collapse: 'timestamp:5',
         limit: this.state.showLimit
       },
     }).then((data) => {
@@ -77,7 +77,7 @@ class App extends Component {
         // http://richard-dev.us.archive.org:8200/?url=www.google.com
         var baseUrl = 'http://richard-dev.us.archive.org:8200/';
         var url2 = row[2].replace(':80', '');
-        var fullurl = encodeURIComponent(`http://web.archive.org/web/${row[1]}/${url2}`);
+        var fullurl = encodeURIComponent(`http://web.archive.org/web/${row[1]}if_/${url2}`);
         return `${baseUrl}?url=${fullurl}`
       }
 

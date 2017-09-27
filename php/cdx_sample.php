@@ -12,6 +12,7 @@ $response = json_decode(file_get_contents($api_url));
 
 // Get a sample set of data
 $skip = floor(count($response) / $user_limit);
+if ($skip == 0) $skip = 1;
 
 // NOTE first element of array is header fields
 $filtered = [$response[0]];
