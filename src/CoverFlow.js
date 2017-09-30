@@ -1,24 +1,28 @@
 import React, { Component } from 'react';
 import {
-  WebGLRenderer, Scene, PerspectiveCamera, Raycaster, Vector2,
+  WebGLRenderer, Scene, PerspectiveCamera, Raycaster, Vector2, Vector3,
   PlaneBufferGeometry, Fog, Mesh, MeshBasicMaterial, Texture
 } from 'three';
+
+var v3 = new Vector3();
 
 class CoverFlow extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.drag = 0.0625;
   }
   shouldComponentUpdate() {
     return false;
   }
   componentDidMount() {
-    // this.canvas = document.createElement('canvas');
+
     this._loop = this.loop.bind(this);
 
     var renderer = this.renderer = new WebGLRenderer({ antialis: true });
     var scene = this.scene = new Scene();
     var camera = this.camera = new PerspectiveCamera(75);
+    camera.userData.position = new Vector3();
 
     this.raycaster = new Raycaster();
     this.geometry = new PlaneBufferGeometry(1, 1);
@@ -39,7 +43,7 @@ class CoverFlow extends Component {
 
     scene.fog = new Fog('black', 0, 50);
 
-    camera.position.y = 8;
+    camera.userData.position.y = 8;
     camera.rotation.x = - Math.PI / 5;
 
     renderer.domElement.style.position = 'absolute';
@@ -54,9 +58,9 @@ class CoverFlow extends Component {
       e.preventDefault();
       var y = e.deltaY;
 
-      camera.position.z += y / 10;
-      camera.position.z = Math.max(
-        Math.min(camera.position.z, range.max), range.min);
+      camera.userData.position.z += y / 10;
+      camera.userData.position.z = Math.max(
+        Math.min(camera.userData.position.z, range.max), range.min);
 
     });
 
@@ -73,9 +77,9 @@ class CoverFlow extends Component {
       var t = e.touches[0];
       var deltaY = t.clientY - touch.y;
 
-      camera.position.z -= deltaY / 10;
-      camera.position.z = Math.max(
-        Math.min(camera.position.z, range.max), range.min);
+      camera.userData.position.z -= deltaY / 10;
+      camera.userData.position.z = Math.max(
+        Math.min(camera.userData.position.z, range.max), range.min);
 
       touch.x = t.clientX;
       touch.y = t.clientY;
@@ -169,6 +173,12 @@ class CoverFlow extends Component {
   }
   loop() {
 
+    this.camera.position.add(
+      v3.copy(this.camera.userData.position)
+        .sub(this.camera.position)
+        .multiplyScalar(this.drag)
+    );
+
     this.renderer.render(this.scene, this.camera);
     requestAnimationFrame(this._loop);
 
@@ -177,19 +187,21 @@ class CoverFlow extends Component {
 
   }
   componentWillReceiveProps(nextProps) {
+
     var props = nextProps;
     console.log(props);
 
     if (this.initiated) {
 
-      if (this.scene.children.length > 0) {
-        let children = this.scene.children.slice(0);
-        for (var i = 0; i < children.length; i++) {
-          this.scene.remove(children[i]);
-          // TODO: Dispose of memory stuff on each mesh here...
-          // children[i].dispose();
-        }
-      }
+      // Only necessary if not refreshing the page on new query.
+      // if (this.scene.children.length > 0) {
+      //   let children = this.scene.children.slice(0);
+      //   for (var i = 0; i < children.length; i++) {
+      //     var mesh = children[i];
+      //     mesh.dispose();
+      //     this.scene.remove(mesh);
+      //   }
+      // }
 
       for (var j = 0; j < props.data.length; j++) {
 
