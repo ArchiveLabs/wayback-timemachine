@@ -22,6 +22,11 @@ function getScreenshotMicroservice(row) {
   return `${baseUrl}?url=${fullurl}`
 }
 
+function getScreenshotMicroserviceCors(row) {
+  var url = encodeURIComponent(getScreenshotMicroservice(row));
+  return `//archive.org/~richard/dev/cors.php?url=${url}`
+}
+
 function getScreenshotIA(row) {
   // http://crawl-services.us.archive.org:8200/wayback?url=http:/www.hubspot.com/&timestamp=20160927
   var baseUrl = 'http://crawl-services.us.archive.org:8200/wayback';
@@ -33,6 +38,8 @@ function getScreenshotIACors(row) {
   var url = encodeURIComponent(getScreenshotIA(row));
   return `//archive.org/~richard/dev/cors.php?url=${url}`
 }
+
+var getScreenshot = getScreenshotMicroserviceCors;
 
 // Processes data returned from the server
 // eg filter out known defects (like craigslist)
@@ -124,7 +131,7 @@ class App extends Component {
           original_url: row[2],
           content_type: row[3],
           response_code: row[4],
-          screenshot_url: getScreenshotIACors(row)
+          screenshot_url: getScreenshot(row)
         }
       });
 
