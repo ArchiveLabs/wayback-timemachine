@@ -128,7 +128,8 @@ class CoverFlow extends Component {
         var dw = canvas.width;
         var dh = canvas.height;
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
 
         scope.drawBrowserBar(canvas, ctx, data);
@@ -162,7 +163,7 @@ class CoverFlow extends Component {
     var w = canvas.width;
     var h = this.BrowserHeight;
     var r = h / 4;
-    var fontSize = h * 0.85;
+    var fontSize = Math.floor(h * 0.85);
 
     ctx.fillStyle = '#ccc';
     ctx.beginPath();
@@ -188,10 +189,13 @@ class CoverFlow extends Component {
     ctx.fill();
 
     ctx.fillStyle = '#333';
-    ctx.font = '900 ' + fontSize + 'px/' + fontSize + 'px Arial, sans-serif';
+    ctx.font = ['900 ', fontSize,
+      'px "Rubik Mono One", Arial, sans-serif'].join('');
+
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(data.timestamp.slice(0, 4).split('').join(' '), w / 2, h / 2);
+    ctx.fillText(data.timestamp.slice(0, 4)
+      .split('').join(' '), w / 2, h / 2);
 
   }
   click(e) {
