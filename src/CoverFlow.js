@@ -188,7 +188,7 @@ class CoverFlow extends Component {
     ctx.fill();
 
     ctx.fillStyle = '#333';
-    ctx.font = '900 ' + fontSize + 'px/' + fontSize + 'px Arial, sans-serif';
+    ctx.font = '900 ' + fontSize + 'px/' + fontSize + 'px Courier, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(data.timestamp.slice(0, 4).split('').join(' '), w / 2, h / 2);

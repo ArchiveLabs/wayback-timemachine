@@ -65,6 +65,8 @@ class App extends Component {
   componentDidMount() {
     if (this.refs.searchEl.value)
       this.fetchData(this.refs.searchEl.value);
+
+    this.refs.searchEl.focus();
   }
 
   handleSubmit(event) {
@@ -143,9 +145,10 @@ class App extends Component {
             <input type="text" defaultValue={this.state.searchValue} onChange={this.handleSearchChange} ref="searchEl" />
             <input type="submit" value={submitText} disabled={this.state.isLoading}/>
           </form>
-          {/*<button className="about-link">About</button>*/}
         </div>
         <CoverFlow data={this.state.results} />
+        <a href="/about.html" className="about-link">About</a>
+
       </div>
     );
   }
