@@ -14,6 +14,42 @@ function getParameterByName(name) {
   return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
 }
 
+function getScreenshotMicroservice(row) {
+  // http://richard-dev.us.archive.org:8200/?url=www.google.com
+  var baseUrl = 'http://richard-dev.us.archive.org:8200/';
+  var url2 = row[2].replace(':80', '');
+  var fullurl = encodeURIComponent(`http://web.archive.org/web/${row[1]}if_/${url2}`);
+  return `${baseUrl}?url=${fullurl}`
+}
+
+function getScreenshotIA(row) {
+  // http://crawl-services.us.archive.org:8200/wayback?url=http:/www.hubspot.com/&timestamp=20160927
+  var baseUrl = 'http://crawl-services.us.archive.org:8200/wayback';
+  var url2 = encodeURIComponent(row[2].replace(':80', ''));
+  return `${baseUrl}?timestamp=${row[1]}&url=${url2}`
+}
+
+function getScreenshotIACors(row) {
+  var url = encodeURIComponent(getScreenshotIA(row));
+  return `//archive.org/~richard/dev/cors.php?url=${url}`
+}
+
+// Processes data returned from the server
+// eg filter out known defects (like craigslist)
+function processData(data) {
+  return data.reduce(function(accumulator, row) {
+    console.log(row);
+
+    // craiglist data that's not actually craigslist
+    if (row.url == 'https://web.archive.org/web/20130706025735/http://www.craigslist.org/')
+      return accumulator;
+
+    accumulator.push(row);
+    return accumulator;
+  }, []);
+}
+
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -51,8 +87,8 @@ class App extends Component {
 
     // metadata
     jQuery.getJSON({
-      //url: 'http://web.archive.org/cdx/search/cdx',
-      url: 'https://archive.org/~richard/dev/cdx_sample.php',
+      url: 'http://web.archive.org/cdx/search/cdx',
+      //url: 'https://archive.org/~richard/dev/cdx_sample.php',
       data: {
         url: searchValue,
         output: 'json',
@@ -78,14 +114,6 @@ class App extends Component {
       //   "1415"
       // ]
 
-      function getScreenshotMicroservice(row) {
-        // http://richard-dev.us.archive.org:8200/?url=www.google.com
-        var baseUrl = 'http://richard-dev.us.archive.org:8200/';
-        var url2 = row[2].replace(':80', '');
-        var fullurl = encodeURIComponent(`http://web.archive.org/web/${row[1]}if_/${url2}`);
-        return `${baseUrl}?url=${fullurl}`
-      }
-
       var dataMapped = data.map(function(row) {
         var url = row[2].replace(':80', '');
         return {
@@ -94,11 +122,13 @@ class App extends Component {
           original_url: row[2],
           content_type: row[3],
           response_code: row[4],
-          screenshot_url: getScreenshotMicroservice(row)
+          screenshot_url: getScreenshotIACors(row)
         }
       });
 
-      this.setState({results: dataMapped});
+      var dataProcessed = processData(dataMapped);
+
+      this.setState({results: dataProcessed});
     });
   }
 
@@ -109,9 +139,11 @@ class App extends Component {
       <div className="App">
         <div className="App-header">
           <form onSubmit={this.handleSubmit}>
+            <img className="wayback-logo" src="/images/Wayback_Machine_logo_2010.svg" />
             <input type="text" defaultValue={this.state.searchValue} onChange={this.handleSearchChange} ref="searchEl" />
             <input type="submit" value={submitText} disabled={this.state.isLoading}/>
           </form>
+          {/*<button className="about-link">About</button>*/}
         </div>
         <CoverFlow data={this.state.results} />
       </div>
