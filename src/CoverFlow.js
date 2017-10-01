@@ -182,7 +182,7 @@ class CoverFlow extends Component {
     mesh.scale.y = this.height;
     mesh.userData.model = data;
     mesh.userData.dot.position.z = mesh.position.z;
-    mesh.userData.dot.position.y = mesh.userData.position.y / 2;
+    // mesh.userData.dot.position.y = mesh.userData.position.y / 2;
 
     return mesh;
 
