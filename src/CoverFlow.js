@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import Promise from 'promise';
 import {
   WebGLRenderer, Scene, PerspectiveCamera, Raycaster, Vector2, Vector3,
-  PlaneBufferGeometry, Fog, Mesh, MeshBasicMaterial, Texture
+  PlaneBufferGeometry, Fog, Mesh, MeshBasicMaterial, Texture, Geometry,
+  LineBasicMaterial, Line, SphereGeometry
 } from 'three';
 
 var v3 = new Vector3();
@@ -13,6 +14,11 @@ class CoverFlow extends Component {
     this.state = {};
     this.drag = 0.0625;
     this.BrowserHeight = 20;
+    this.SphereGeometry = new SphereGeometry(0.25, 32, 32);
+    this.SphereMaterial = new MeshBasicMaterial({
+      color: 'white'
+    });
+    this.frameCount = 0;
   }
   shouldComponentUpdate() {
     return false;
@@ -21,7 +27,7 @@ class CoverFlow extends Component {
 
     this._loop = this.loop.bind(this);
 
-    var renderer = this.renderer = new WebGLRenderer({ antialis: true });
+    var renderer = this.renderer = new WebGLRenderer({ antialias: true });
     var scene = this.scene = new Scene();
     var camera = this.camera = new PerspectiveCamera(75);
     camera.userData.position = new Vector3();
@@ -52,6 +58,22 @@ class CoverFlow extends Component {
     renderer.domElement.style.display = 'block';
     renderer.domElement.style.top = 0;
     renderer.domElement.style.left = 0;
+
+    this.timeline = new Line(
+      new Geometry(),
+      new LineBasicMaterial({
+        color: 'white',
+        linewidth: 2
+      })
+    );
+
+    this.timeline.geometry.vertices.push(
+      new Vector3(0, 0, 0),
+      new Vector3(0, 0, 1)
+    );
+    this.timeline.geometry.verticesNeedUpdate = true;
+
+    // scene.add(this.timeline);
 
     window.addEventListener('resize', this.resize.bind(this), false);
 
@@ -112,6 +134,11 @@ class CoverFlow extends Component {
         opacity: 0
       })
     );
+    mesh.userData.dot = new Mesh(
+      this.SphereGeometry,
+      this.SphereMaterial
+    );
+    mesh.userData.dot.userData.isDot = true;
     mesh.userData.position = new Vector3();
     mesh.userData.opacity = 0;
     mesh.userData.promise = new Promise(function(resolve, reject) {
@@ -136,7 +163,7 @@ class CoverFlow extends Component {
 
         mesh.material.color.set('white');
         mesh.material.map = new Texture(canvas);
-        mesh.material.map.anisotropy = scope.renderer.getMaxAnisotropy();
+        mesh.material.map.anisotropy = scope.renderer.capabilities.getMaxAnisotropy();
 
         mesh.material.map.needsUpdate = true;
         mesh.material.needsUpdate = true;
@@ -154,6 +181,8 @@ class CoverFlow extends Component {
     mesh.scale.x = this.width;
     mesh.scale.y = this.height;
     mesh.userData.model = data;
+    mesh.userData.dot.position.z = mesh.position.z;
+    mesh.userData.dot.position.y = mesh.userData.position.y / 2;
 
     return mesh;
 
@@ -228,6 +257,10 @@ class CoverFlow extends Component {
   }
   loop() {
 
+    this.frameCount++;
+
+    var scale = 0.6 * (Math.sin(this.frameCount / 20) + 1) / 2 + 0.4;
+
     this.camera.position.add(
       v3.copy(this.camera.userData.position)
         .sub(this.camera.position)
@@ -246,6 +279,11 @@ class CoverFlow extends Component {
       if (mesh.userData.opacity !== undefined) {
         mesh.material.opacity += (mesh.userData.opacity
           - mesh.material.opacity) * this.drag * 2;
+      }
+      if (mesh.userData.isDot) {
+        mesh.scale.x = scale;
+        mesh.scale.y = scale;
+        mesh.scale.z = scale;
       }
     }
 
@@ -284,13 +322,18 @@ class CoverFlow extends Component {
           mesh.userData.position.y = 0;
           mesh.userData.opacity = 1;
           scope.scene.add(mesh);
+          scope.scene.remove(mesh.userData.dot);
         });
+
+        this.scene.add(mesh.userData.dot);
 
       }
 
       if (props.data.length > 0) {
         this.range.min += this.distance * 0.66;
         this.range.max += this.distance * 0.66;
+        this.timeline.scale.z = this.range.max - this.range.min;
+        this.timeline.position.z = this.range.min;
         this.camera.userData.position.z = this.range.max;
       }
 
