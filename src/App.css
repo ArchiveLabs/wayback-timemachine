@@ -18,7 +18,11 @@
 .wayback-logo {
   height: 30px;
   width: auto;
+  margin-left: auto;
+  margin-right: auto;
   margin-bottom: 6px;
+  display: block;
+
 }
 form {
   padding: 10px 10px 10px 15px;
@@ -52,7 +56,7 @@ form > input[type=submit] {
 }
 .loading { color: white; position: absolute; right: 20px; top: 20px; }
 
-@media(min-width:800px) {
+@media(min-width:400px) {
   form {
     display: flex;
     flex-direction: row;
@@ -64,5 +68,6 @@ form > input[type=submit] {
     height: 100%;
     margin-right:10px;
     margin-bottom: 0;
+    display: inline-block;
   }
 }
