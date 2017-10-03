@@ -39,7 +39,7 @@ function getScreenshotIACors(row) {
   return `//archive.org/~richard/dev/cors.php?url=${url}`
 }
 
-var getScreenshot = getScreenshotMicroserviceCors;
+var getScreenshot = getScreenshotIACors;
 
 // Processes data returned from the server
 // eg filter out known defects (like craigslist)
