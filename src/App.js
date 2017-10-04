@@ -29,9 +29,10 @@ function getScreenshotMicroserviceCors(row) {
 
 function getScreenshotIA(row) {
   // http://crawl-services.us.archive.org:8200/wayback?url=http:/www.hubspot.com/&timestamp=20160927
+  // `http://crawl-services.us.archive.org:8200/wayback?url=http://iskme.org/&timestamp=2017&width=128&height=96&format=jpeg`
   var baseUrl = 'http://crawl-services.us.archive.org:8200/wayback';
   var url2 = encodeURIComponent(row[2].replace(':80', ''));
-  return `${baseUrl}?timestamp=${row[1]}&url=${url2}`
+  return `${baseUrl}?timestamp=${row[1]}&url=${url2}&format=jpeg`
 }
 
 function getScreenshotIACors(row) {
@@ -39,7 +40,7 @@ function getScreenshotIACors(row) {
   return `//archive.org/~richard/dev/cors.php?url=${url}`
 }
 
-var getScreenshot = getScreenshotIACors;
+var getScreenshot = getScreenshotIA;
 
 // Processes data returned from the server
 // eg filter out known defects (like craigslist)
