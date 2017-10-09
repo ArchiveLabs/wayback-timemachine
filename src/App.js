@@ -105,8 +105,8 @@ class App extends Component {
 
     // metadata
     jQuery.getJSON({
-      url: 'http://web.archive.org/cdx/search/cdx',
-      //url: 'https://archive.org/~richard/dev/cdx_sample.php',
+      //url: 'http://web.archive.org/cdx/search/cdx',
+      url: 'https://archive.org/~richard/dev/cdx_sample.php', // caching
       data: {
         url: searchValue,
         output: 'json',
