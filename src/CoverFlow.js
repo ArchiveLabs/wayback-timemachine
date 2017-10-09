@@ -240,7 +240,8 @@ class CoverFlow extends Component {
 
     if (intersects.length > 0) {
       mesh = intersects[0].object;
-      window.open(mesh.userData.model.url, '_blank');
+      if (mesh.userData.model)
+        window.open(mesh.userData.model.url, '_blank');
     }
 
   }

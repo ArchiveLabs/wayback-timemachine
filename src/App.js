@@ -22,6 +22,14 @@ function getScreenshotMicroservice(row) {
   return `${baseUrl}?url=${fullurl}`
 }
 
+function getScreenshotChromium(row) {
+  // http://richard-dev.us.archive.org:8200/?url=www.google.com
+  var baseUrl = 'http://richard-dev.us.archive.org:8012/chromium_screenshot.php';
+  var url2 = row[2].replace(':80', '');
+  var fullurl = encodeURIComponent(`http://web.archive.org/web/${row[1]}if_/${url2}`);
+  return `${baseUrl}?url=${fullurl}`
+}
+
 function getScreenshotMicroserviceCors(row) {
   var url = encodeURIComponent(getScreenshotMicroservice(row));
   return `//archive.org/~richard/dev/cors.php?url=${url}`
@@ -32,7 +40,7 @@ function getScreenshotIA(row) {
   // `http://crawl-services.us.archive.org:8200/wayback?url=http://iskme.org/&timestamp=2017&width=128&height=96&format=jpeg`
   var baseUrl = 'http://crawl-services.us.archive.org:8200/wayback';
   var url2 = encodeURIComponent(row[2].replace(':80', ''));
-  return `${baseUrl}?timestamp=${row[1]}&url=${url2}&format=jpeg`
+  return `${baseUrl}?timestamp=${row[1]}&url=${url2}` /* &format=jpeg`*/
 }
 
 function getScreenshotIACors(row) {
@@ -40,7 +48,7 @@ function getScreenshotIACors(row) {
   return `//archive.org/~richard/dev/cors.php?url=${url}`
 }
 
-var getScreenshot = getScreenshotIA;
+var getScreenshot = getScreenshotChromium;
 
 // Processes data returned from the server
 // eg filter out known defects (like craigslist)
