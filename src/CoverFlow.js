@@ -112,6 +112,20 @@ class CoverFlow extends Component {
 
     renderer.domElement.addEventListener('click', this.click.bind(this), false);
 
+    // AUTOPLAY FUNCTIONALITY
+    if (this.props.autoplay) {
+      setTimeout(() => {
+        setInterval(() => {
+          let y = -2.5;
+          camera.userData.position.z += y / 10;
+          camera.userData.position.z = Math.max(
+            Math.min(camera.userData.position.z, range.max), range.min);
+        }, 50);
+      }, 2000);
+    }
+
+    // END AUTOPLAY FUNCTIONALITY
+
     this.resize();
     this.loop();
 
