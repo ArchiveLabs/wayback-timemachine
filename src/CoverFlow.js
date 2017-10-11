@@ -77,7 +77,7 @@ class CoverFlow extends Component {
 
     window.addEventListener('resize', this.resize.bind(this), false);
 
-    window.addEventListener('mousewheel', function(e) {
+    window.addEventListener('wheel', function(e) {
 
       e.preventDefault();
       var y = e.deltaY;
