@@ -291,11 +291,9 @@ class CoverFlow extends Component {
         );
         var size = this.distance;
         var dx = Math.min(Math.max(
-          Math.abs(mesh.position.z) - Math.abs(this.camera.position.z), 0), size);
+          mesh.position.z - this.camera.position.z, 0), size);
         var pct = dx / size;
-        // Richard: This line does the wave. If you don't like it, comment
-        // out this line:
-        mesh.rotation.x = - ((1 - pct) * (Math.PI / 5) + (Math.PI / 10));
+        mesh.rotation.x = - ((1 - pct) * Math.PI / 5);
       }
       if (mesh.userData.opacity !== undefined) {
         mesh.material.opacity += (mesh.userData.opacity
