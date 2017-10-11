@@ -112,6 +112,20 @@ class CoverFlow extends Component {
 
     renderer.domElement.addEventListener('click', this.click.bind(this), false);
 
+    // AUTOPLAY FUNCTIONALITY
+    if (this.props.autoplay) {
+      setTimeout(() => {
+        setInterval(() => {
+          let y = -2.5;
+          camera.userData.position.z += y / 10;
+          camera.userData.position.z = Math.max(
+            Math.min(camera.userData.position.z, range.max), range.min);
+        }, 50);
+      }, 2000);
+    }
+
+    // END AUTOPLAY FUNCTIONALITY
+
     this.resize();
     this.loop();
 
@@ -220,7 +234,6 @@ class CoverFlow extends Component {
     ctx.fillStyle = '#333';
     ctx.font = ['900 ', fontSize,
       'px "Rubik Mono One", Arial, sans-serif'].join('');
-
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(data.timestamp.slice(0, 4)
@@ -241,7 +254,8 @@ class CoverFlow extends Component {
 
     if (intersects.length > 0) {
       mesh = intersects[0].object;
-      window.open(mesh.userData.model.url, '_blank');
+      if (mesh.userData.model)
+        window.open(mesh.userData.model.url, '_blank');
     }
 
   }

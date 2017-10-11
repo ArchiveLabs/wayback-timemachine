@@ -1,23 +1,28 @@
 <?
 /**
- * Basic endpoint to get an even sample set from cdx results
+ * Wrapper for cdx api with caching
  */
 
-$user_limit = $_GET['limit'] ? $_GET['limit'] : 25;
+// ini_set("display_errors","On"); // DEBUG
+// ini_set("log_errors","On"); // DEBUG
+// error_reporting(E_STRICT | E_ALL); // DEBUG
+
+$recache = isset($_GET['recache']);
+
+$cache_dir = '/tmp/cdx_cache/'; // trailing slash
+if (!file_exists($cache_dir))
+  mkdir($cache_dir);
+
 $params = $_GET;
-$params['limit'] = 10000000; // 10 million to ensure full sample size
 $cdx = 'http://web.archive.org/cdx/search/cdx?';
 $api_url = $cdx . http_build_query($params);
-$response = json_decode(file_get_contents($api_url));
 
-// Get a sample set of data
-$skip = floor(count($response) / $user_limit);
-if ($skip == 0) $skip = 1;
-
-// NOTE first element of array is header fields
-$filtered = [$response[0]];
-for ($i = 1; $i < count($response); $i += $skip) {
-  $filtered[] = $response[$i];
+$cache_path = $cache_dir . base64_encode($api_url);
+if (!$recache && file_exists($cache_path)) {
+  $raw_response = file_get_contents($cache_path);
+} else {
+  $raw_response = file_get_contents($api_url);
+  file_put_contents($cache_path, $raw_response);
 }
 
 header('Access-Control-Allow-Origin: *');
@@ -26,4 +31,5 @@ header('Access-Control-Allow-Methods: GET, OPTIONS');
 header('Access-Control-Max-Age: 1000');
 header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token , Authorization');
 header('Content-Type: application/json');
-echo json_encode($filtered, JSON_PRETTY_PRINT);
+
+echo $raw_response;
